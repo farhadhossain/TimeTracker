@@ -12,13 +12,13 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow = new BrowserWindow({width: 600, height: 600});
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/login.html`);
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -58,10 +58,15 @@ app.on('activate', function () {
 // code. You can also put them in separate files and require them here.
 
 const {ipcMain} = require('electron')
-ipcMain.on('asynchronous-message', (event, arg) => {
-  console.log(arg);
-  mainWindow.setSize(600,800); 
-  mainWindow.loadURL(`file://${__dirname}/`+arg);
-})
+ipcMain.on('asynchronous-message', (event, action, arg1, arg2, arg3) => {
+  console.log(action);
+  if(action==='loadURL'){
+      mainWindow.loadURL(`file://${__dirname}/`+arg1);
+  }else if(action==='setSize'){
+      mainWindow.setSize(arg1, arg2);
+  }else if(action==='startClickJs'){
+     
+  }
 
+});
 
