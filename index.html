@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Time Tracker</title>
+    <script>
+      "use strict";
+      // You can also require other files to run in this process
+      var ui = require('./js/ui.js')
+    </script>
+  </head>
+  <body>
+    <h1>Time Tracker</h1>
+  
+    <!-- All of the Node.js APIs are available in this renderer process. -->
+    We are using node <script>document.write(process.versions.node)</script><br/>
+    Chromium <script>document.write(process.versions.chrome)</script><br/>
+    Electron <script>document.write(process.versions.electron)</script><br/>
+    App Path <script>document.write(ui.getName())</script><br/>
+    <a href="#" onclick="ui.openWin();">Open New</a><br/>
+    <a href="#" onclick="ui.createFramelessWindow();">createFramelessWindow</a><br/>
+    <a href="#" id="screen-shot">Screencapture</a><div id="screenshot-path"></div><br/>
+    <a href="#" id="robot-test">Robot Test</a></div><br/>
+     <a href="#" id="active-window">Active Window</a></div><br/>
+  </body>
+
+   <script src="./js/active_window.js"></script>
+   <script src="./js/screenshot.js"></script>
+   <script src="./js/event_track.js"></script>
+</html>

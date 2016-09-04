@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script>
+       var $ = require('jquery');
+       window.$ = $;
+       jQuery= $;
+       require('bootstrap');
+    </script>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <style type="text/css">
+      .vcenter {
+          display: inline-block;
+          vertical-align: middle;
+          float: none;
+      }
+    </style>
+  </head>
+  <body>
+      <div style="width:100%;">
+        <form class="well vcenter" style="width:50%;margin-left:25%;margit-top:auto;">
+          <div class="form-group">
+              <label for="inputEmail">Email</label>
+              <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+          </div>
+          <div class="form-group">
+              <label for="inputPassword">Password</label>
+              <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+          </div>
+          <div class="checkbox">
+              <label><input type="checkbox"> Remember me</label>
+          </div>
+          <button id="target"  type="button" class="btn btn-primary">Sign In</button>
+      </form>
+    </div>
+  </body>
+  <script>
+    $("#target").click(function( event ) {
+       const {ipcRenderer} = require('electron');
+       ipcRenderer.send('asynchronous-message', 'index.html');
+    });
+  </script>
+</html>
