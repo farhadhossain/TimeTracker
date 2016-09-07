@@ -22,14 +22,14 @@
     "url": "https://github.com/electron/electron-quick-start/issues"
   },
   "homepage": "https://github.com/electron/electron-quick-start#readme",
-  /*"devDependencies": {
+  "devDependencies": {
     "electron-prebuilt": "^1.2.0",
     "electron-rebuild": "^1.2.1"
-  },*/
+  },
   "dependencies": {
     "keypress": "^0.2.1",
-    //"robotjs": "^0.4.4",
-    //"tty": "^1.0.1",
+    "robotjs": "^0.4.4",
+    "tty": "^1.0.1",
     "active-window": "*",
     "jquery":"*",
     "bootstrap":"^3.3.7",
