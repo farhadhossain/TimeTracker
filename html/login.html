@@ -9,7 +9,7 @@
        jQuery= $;
        require('bootstrap');
     </script>
-    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <style type="text/css">
       a{
         color: #15B0E0;
@@ -19,7 +19,7 @@
   </head>
   <body>
       <div id="container" style="width:82%;">
-          <div style="width:100%;text-align:center;margin-bottom:40px;"><img src="./assets/images/logo.png" style="width:60%;" /></div>
+          <div style="width:100%;text-align:center;margin-bottom:40px;"><img src="../assets/images/logo.png" style="width:60%;" /></div>
           <div id="formDiv">
             <form id="loginForm">
                 <div id="error" class="alert alert-danger collapse" role="alert">
@@ -32,7 +32,7 @@
                 <div class="form-group">
                     <input type="password" class="form-control" name="password" placeholder="Password" style="height:60px; margin-top:25px;" value="priyanka21"> 
                     <span style="float:right;margin-top:-42px;margin-right:10px;">
-                      <button style="border:none;padding: 3px 15px;color:white;border-radius:3px;">Forgot?</button>
+                      <button id="forgot-password" style="border:none;padding: 3px 15px;color:white;border-radius:3px;">Forgot?</button>
                     </span>
                 </div>
                 <div class="checkbox" style="margin:10px;">
@@ -121,6 +121,8 @@
     }
 
     $('#container').center();
+
+    $('#forgot-password').unbind('click');
 
   </script>
 </html>

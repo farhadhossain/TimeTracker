@@ -15,10 +15,10 @@ function createWindow () {
   mainWindow = new BrowserWindow({width: 450, height: 783});
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/login.html`);
+  mainWindow.loadURL(`file://${__dirname}/html/login.html`);
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -61,7 +61,7 @@ const {ipcMain} = require('electron')
 ipcMain.on('asynchronous-message', (event, action, arg1, arg2, arg3) => {
   console.log(action);
   if(action==='loadURL'){
-      mainWindow.loadURL(`file://${__dirname}/`+arg1);
+      mainWindow.loadURL(`file://${__dirname}/html/`+arg1);
   }else if(action==='setSize'){
       mainWindow.setSize(arg1, arg2);
   }else if(action==='startClickJs'){
