@@ -28,7 +28,8 @@ function createWindow () {
     app.quit();
     mainWindow = null
   });
-
+   
+  startTrackingEvent(); 
   
 }
 
@@ -41,6 +42,7 @@ app.on('ready', createWindow);
 app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
+  ipcMain.removeAllListeners(['asynchronous-message']);
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -57,6 +59,7 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+
 const {ipcMain} = require('electron')
 ipcMain.on('asynchronous-message', (event, action, arg1, arg2, arg3) => {
   console.log(action);
@@ -66,7 +69,62 @@ ipcMain.on('asynchronous-message', (event, action, arg1, arg2, arg3) => {
       mainWindow.setSize(arg1, arg2);
   }else if(action==='startClickJs'){
      
+  }else if(action==='getEvents'){
+   
   }
-
 });
+
+
+
+var mouseClick=0, keyType=0, filePath='', isTracking = false, eventSender = null;
+
+var startTrackingEvent = function(){
+      var gkm = require('gkm');
+      if(mouseClick==0 && keyType==0){
+          // Listen to all key events (pressed, released, typed) 
+          gkm.events.on('key.typed', function(data) {
+              if(isTracking){
+                keyType++;
+              }
+              console.log(this.event + ' ' + data);
+          });
+           
+          // Listen to all mouse events (click, pressed, released, moved, dragged) 
+          gkm.events.on('mouse.clicked', function(data) {
+              if(isTracking){
+                mouseClick++;
+              }
+              console.log(this.event + ' ' + data);
+          });
+    }
+}; 
+
+ipcMain.on('get-events-request', function(event, arg1) {
+   eventSender = event.sender;
+   filePath = arg1;
+   monitor.getActiveWindow(afterGetWindowName);
+});
+
+
+ipcMain.on('reset-events-request', function(event, arg1) {
+   mouseClick=0;
+   keyType=0;
+});
+
+ipcMain.on('set-tracking-request', function(event, arg1) {
+   isTracking = arg1;
+});
+
+ var monitor = require('active-window');
+ var afterGetWindowName = function(window){
+    try {
+      console.log("App: " + window.app);
+      console.log("Title: " + window.title);
+      eventSender.send('get-events-response', filePath,  window.title, mouseClick, keyType);
+    }catch(err) {
+      console.log(err);
+    } 
+};
+
+        
 

@@ -200,18 +200,6 @@ $(document).ready(function() {
         
         });
           
-        $('#sw_start').click(function() {
-            if($('#sw_start').attr('value')=='Start'){
-                $.APP.startTimer('sw');
-                $('#sw_start').attr('value', 'Pause');
-                $('#sw_start').removeClass('btn-info');
-            }else{
-                $.APP.pauseTimer();
-                $('#sw_start').attr('value', 'Start'); 
-                $('#sw_start').addClass('btn-info');
-            }
-        });    
-
     
         /*$('#sw_stop').click(function() {
             $.APP.stopTimer();

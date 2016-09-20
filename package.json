@@ -35,7 +35,8 @@
     "jquery":"*",
     "bootstrap":"^3.3.7",
     "ipc":"*",
-    "gkm":"*"
+    "gkm":"*",
+    "restler":"*"
   }
   
 }

@@ -10,6 +10,7 @@
        require('bootstrap');
     </script>
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/main.css">
     <style type="text/css">
       a{
         color: #15B0E0;
@@ -27,10 +28,10 @@
                   <span class="message">Invalid Username or Password</span>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" name="email_id" placeholder="Username or Email" style="height:60px;" value="sonerpriyanka21@gmail.com">
+                    <input type="text" class="form-control" name="email_id" placeholder="Username or Email" style="height:60px;" value="singhmonika1205@gmail.com">
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" name="password" placeholder="Password" style="height:60px; margin-top:25px;" value="priyanka21"> 
+                    <input type="password" class="form-control" name="password" placeholder="Password" style="height:60px; margin-top:25px;" value="monika21"> 
                     <span style="float:right;margin-top:-42px;margin-right:10px;">
                       <button id="forgot-password" style="border:none;padding: 3px 15px;color:white;border-radius:3px;">Forgot?</button>
                     </span>
@@ -84,13 +85,15 @@
                           dataType: "json",
                           contentType: "application/json",
                           headers: {"Content-Type": "application/json", "Client-Service":"frontend-client","Auth-Key":"3c6e0b8a9c15224a8228b9a98ca1531d"}, 
-                          data:JSON.stringify({ action:"login", email_id: email_id,  password: password}) 
+                          data:JSON.stringify({ action:"login", email_username: email_id,  password: password}) 
                         });
     
       posting.done(function( data ) {
          $('#myPleaseWait').modal('hide');
          if(data){
-            localStorage.setItem("user", JSON.stringify(data));
+            console.log(JSON.stringify(data));
+            localStorage.setItem("user", JSON.stringify(data.user_info));
+            localStorage.setItem("token", data.token);
             const {ipcRenderer} = require('electron');
             ipcRenderer.send('asynchronous-message', 'loadURL', 'current_contracts.html');
             //ipcRenderer.send('asynchronous-message', 'setSize', 400, 600);

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Current Contracts</title>
+    <script>
+       var user = JSON.parse(localStorage.getItem('user'));
+       var $ = require('jquery');
+       window.$ = $;
+       jQuery= $;
+       require('bootstrap');
+       const {ipcRenderer} = require('electron');
+    </script>
+    <script src="../js/jquery.tmpl.min.js"></script>
+    
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <style type="text/css">
+       
+    </style>
+  </head>
+  <body style="margin:0;padding:0;">
+    <div id="container" style="width:100%;"> 
+
+       <div class="panel panel-default" style="border:none;">
+          
+          <div class="panel-heading"></div>
+
+          <div class="list-group"> 
+            <div class="list-group-item" style="width:100%;text-align:center;"><h4> Settings</h4></div>
+            <a href="#" class="list-group-item settings-item"> 
+                <table><tr class="toggle-menu"> 
+                  <td style="width:94%">
+                    <h2>General</h2> 
+                  </td>
+                  <td class="right-arrow" valign="middle"><span class="glyphicon glyphicon-menu-right"></span></td>
+                </tr>
+                <tr>
+                   <td colspan="2">
+                      <div>
+                         <input type="checkbox" name=""> <label>Automatically launch when i start the computer</label>
+                       </div>   
+                   </td>
+                </tr>
+                </table>
+            </a>   
+            <a href="#" class="list-group-item settings-item"> 
+                <table><tr class="toggle-menu"> 
+                  <td style="width:94%">
+                    <h2>Snapshots</h2> 
+                  </td>
+                  <td class="right-arrow" valign="middle"><span class="glyphicon glyphicon-menu-right"></span></td>
+                </tr>
+                <tr>
+                   <td colspan="2">
+                      <div>
+                         <input type="radio" name="capture"> <label>Capture active screen only</label><br/><br/>
+                         <input type="radio" name="capture"> <label>Capture all screens</label><br/><br/>
+                         <input type="checkbox" name=""> <label>Notify when screenshots are taken</label>
+                       </div>   
+                   </td>
+                </tr>
+                </table>    
+            </a>   
+            <a href="#" class="list-group-item settings-item">
+                <table><tr class="toggle-menu"> 
+                  <td style="width:94%">
+                    <h2>Camera Resolution</h2> 
+                  </td>
+                  <td class="right-arrow" valign="middle"><span class="glyphicon glyphicon-menu-right"></span></td>
+                </tr>
+                <tr>
+                   <td colspan="2">
+                      <div>
+                         <input type="radio" name="resolution"> <label>Low</label><br/><br/>
+                         <input type="radio" name="resolution"> <label>Medium</label><br/><br/>
+                         <input type="radio" name="resolution"> <label>High</label>
+                       </div>   
+                   </td>
+                </tr>
+                </table>    
+            </a>   
+          </div>
+       
+       </div>
+      
+    </div>
+
+  </body>
+
+  <script id="list-group-item" type="text/x-custom-template">
+    <a href="#" class="list-group-item contract" job_name="${job_name}"> 
+        <table style="width:100%;height:100%;min-height:80px;"><tr> 
+          <td style="width:94%">
+            <h4 class="list-group-item-heading" style="color:#15B0E0;">${job_name}</h4> 
+            <p class="list-group-item-text">${description}</p>
+          </td>
+          <td style="width:6%;height:100%;color:#9FE26E;font-size:30px;" valign="middle"><span class="glyphicon glyphicon-menu-right" style="float:right:"></span></td>
+        </tr></table>
+    </a> 
+  </script>
+
+  <script type="text/javascript">
+      $(".panel-heading").load("header.html"); 
+      $('#container').css('height', $(window).height());
+
+      $('.toggle-menu').click(function(){
+         var self = this; 
+         $(this).next().find('div').slideToggle(function(){
+            if($(self).next().find('div').is(":hidden")){
+               $(self).children(':nth-child(2)').find('span').removeClass('glyphicon-menu-down');
+            }else{
+               $(self).children(':nth-child(2)').find('span').addClass('glyphicon-menu-down'); 
+            }
+         });
+      });
+  </script>
+  </html>

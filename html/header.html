@@ -1,0 +1,35 @@
+
+<table width="100%"><tr>
+    <td>
+      <div class="dropdown">
+        <span type="button" id="userMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span id="userName">User Name</span>
+            <span class="caret"></span>
+        </span>
+        <!--ul class="dropdown-menu" aria-labelledby="dropdownMenu2" style="border:none;"> 
+          <li><a href="#">Settings...</a></li>
+          <li><a href="#">Support & Feedback...</a></li>
+          <li><a href="#">About...</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Quit</a></li>
+        </ul-->
+      </div>
+    </td> 
+    <td>
+        <div class="dropdown">
+            <span type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+               <h4 style="float:right;" class="glyphicon glyphicon-align-justify"></h4>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu2" style="border:none;margin-top:40px;"> 
+              <li><a href="#" onclick="const {ipcRenderer} = require('electron');ipcRenderer.send('asynchronous-message', 'loadURL', 'settings_menu.html');">Settings</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">About</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">Log Out</a></li>
+            </ul>
+        </div>
+    </td>
+</tr></table>
+<script type="text/javascript">
+  $('#userName').html(user.user_name); 
+</script>

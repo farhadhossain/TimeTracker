@@ -64,6 +64,9 @@ eventTracker.addEventListener('click', function (event) {
   gkm.events.on('mouse.*', function(data) {
       console.log(this.event + ' ' + data);
   });
+
+
+  
  /*
   var clickjs = require('click.js')
   var click = new clickjs()
