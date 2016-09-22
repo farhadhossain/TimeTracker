@@ -21,9 +21,9 @@
                <h4 style="float:right;" class="glyphicon glyphicon-align-justify"></h4>
             </span>
             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu2" style="border:none;margin-top:40px;"> 
-              <li><a href="#" onclick="const {ipcRenderer} = require('electron');ipcRenderer.send('asynchronous-message', 'loadURL', 'settings_menu.html');">Settings</a></li>
+              <li><a href="#" onclick="openSettings();">Settings</a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="#">About</a></li>
+              <li><a href="#" onclick="openAbout();">About</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="#">Log Out</a></li>
             </ul>
@@ -32,4 +32,14 @@
 </tr></table>
 <script type="text/javascript">
   $('#userName').html(user.user_name); 
+
+  function openSettings(){
+    const {ipcRenderer} = require('electron');
+    ipcRenderer.send('asynchronous-message', 'newWindow', 'settings_menu.html');
+  }
+
+  function openAbout(){
+    const {ipcRenderer} = require('electron');
+    ipcRenderer.send('asynchronous-message', 'newWindow', 'about.html');
+  }
 </script>

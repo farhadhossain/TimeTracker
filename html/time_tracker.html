@@ -88,10 +88,10 @@
                    <td rowspan="2" width="60%">
                       <img style="width:100%;" id="screenshot-image" src="">
                    </td>
-                   <td><div>TODAY</div><div class="green">00:06</div></td>
+                   <td><div>TODAY</div><div class="green" id="total_time">00:06</div></td>
                 </tr>
                 <tr>
-                    <td><div style="margin-top:20px;">THIS WEEK</div><div class="green">12:08</div></td>
+                    <td><div style="margin-top:20px;">THIS WEEK</div><div class="green" id="total_week_time">12:08</div></td>
                 </tr>
                 <tr>
                     <td colspan="2"><textarea style="width:100%;border: 1px solid #EEE;margin-top:15px;resize: none;" placeholder="What are you working on?" rows="5" re></textarea></td>
@@ -187,6 +187,7 @@
               }).on("complete", function(data) {
                   $('#myPleaseWait').modal('hide');
                   console.log(data);
+                  loadContractDetail();
               }); 
         });            
       };
@@ -207,7 +208,7 @@
               $.APP.startTimer('sw');
               $('#sw_start').attr('value', 'PAUSE WORK');
               $('#sw_start').removeClass('btn-info');
-              takeScreenshotEvent = setInterval(function(){ screenshot.takeScreenshot(); }, 20000);
+              takeScreenshotEvent = setInterval(function(){ screenshot.takeScreenshot(); }, 60000);
           }else{
               isTracking = false;  
               clearInterval(takeScreenshotEvent);
@@ -223,5 +224,52 @@
          postScreenshot();
       });
 
+
+      function loadContractDetail(){
+            $.date = function(dateObject) {
+                var d = new Date(dateObject);
+                var day = d.getDate();
+                var month = d.getMonth() + 1;
+                var year = d.getFullYear();
+                if (day < 10) {
+                    day = "0" + day;
+                }
+                if (month < 10) {
+                    month = "0" + month;
+                }
+                var date = year + "-" + month + "-" + day;
+
+                return date;
+            };
+
+            //$('#myPleaseWait').modal('show');
+      
+            var url=' http://ec2-54-218-59-115.us-west-2.compute.amazonaws.com/api'; 
+            var posting = $.ajax({
+                          type:'POST', 
+                          url:url,
+                          dataType: "json",
+                          contentType: "application/json",
+                          headers: {"Content-Type": "application/json", 
+                                    "Client-Service":"frontend-client",
+                                    "Auth-Key":"3c6e0b8a9c15224a8228b9a98ca1531d", 
+                                    "Authorization":localStorage.getItem("token"),
+                                    "User-ID":user.user_id}, 
+                          data:JSON.stringify({ action:"total_time", contract_id : localStorage.getItem("selectedContract") , date:$.date(new Date())}) 
+                        });
+
+            posting.done(function( data ) {
+               $('#myPleaseWait').modal('hide');
+               console.log(JSON.stringify(data));
+               $('#total_week_time').html(data.total_week_time);
+               $('#total_time').html(data.total_time);         
+            });
+
+            posting.fail(function() {
+               //$('#myPleaseWait').modal('hide');
+               alert("Couldn't connect to server");
+             });
+      }; 
+      loadContractDetail();
   </script>
   </html>

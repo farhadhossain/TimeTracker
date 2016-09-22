@@ -18,7 +18,7 @@ function createWindow () {
   mainWindow.loadURL(`file://${__dirname}/html/login.html`);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -29,6 +29,14 @@ function createWindow () {
     mainWindow = null
   });
    
+  /*if (externalDisplay) {
+    win = new BrowserWindow({
+      x: externalDisplay.bounds.x + 50,
+      y: externalDisplay.bounds.y + 50
+    })
+    win.loadURL('https://github.com')
+  }*/
+
   startTrackingEvent(); 
   
 }
@@ -69,8 +77,11 @@ ipcMain.on('asynchronous-message', (event, action, arg1, arg2, arg3) => {
       mainWindow.setSize(arg1, arg2);
   }else if(action==='startClickJs'){
      
-  }else if(action==='getEvents'){
-   
+  }else if(action==='newWindow'){
+      let win = new BrowserWindow({titleBarStyle: 'hidden', width: 450, height: 783});
+      win.setPosition(mainWindow.getPosition()[0] + 460, mainWindow.getPosition()[1]);
+      win.loadURL(`file://${__dirname}/html/`+arg1);
+      win.show();
   }
 });
 
