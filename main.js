@@ -1,6 +1,8 @@
 "use strict";
 const electron = require('electron');
 
+const {dialog, Tray} = require('electron');
+
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
@@ -8,11 +10,14 @@ const BrowserWindow = electron.BrowserWindow;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow, electronScreen;
 
 function createWindow () {
+  
+  const appIcon = new Tray(`${__dirname}/assets/images/tray.png`)
+
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 450, height: 783});
+  mainWindow = new BrowserWindow({width: 450, height: 783, resizable:false, maximizable: false});
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/html/login.html`);
@@ -28,6 +33,33 @@ function createWindow () {
     app.quit();
     mainWindow = null
   });
+
+  mainWindow.webContents.on('crashed', function () {
+    const options = {
+      type: 'info',
+      title: 'Renderer Process Crashed',
+      message: 'This process has crashed.',
+      buttons: ['Reload', 'Close']
+    }
+    dialog.showMessageBox(options, function (index) {
+      if (index === 0) mainWindow.reload()
+      else mainWindow.close()
+    })
+  });
+
+
+  mainWindow.on('unresponsive', function () {
+    const options = {
+      type: 'info',
+      title: 'Renderer Process Hanging',
+      message: 'This process is hanging.',
+      buttons: ['Reload', 'Close']
+    }
+    dialog.showMessageBox(options, function (index) {
+      if (index === 0) mainWindow.reload()
+      else mainWindow.close()
+    })
+  });
    
   /*if (externalDisplay) {
     win = new BrowserWindow({
@@ -38,7 +70,12 @@ function createWindow () {
   }*/
 
   startTrackingEvent(); 
-  
+  monitor.getActiveWindow(afterGetWindowName, -1, 2);
+  /*javaversion(function(err,version){
+    console.log("Version is " + version);
+  });*/
+
+  electronScreen = electron.screen;
 }
 
 // This method will be called when Electron has finished
@@ -78,16 +115,30 @@ ipcMain.on('asynchronous-message', (event, action, arg1, arg2, arg3) => {
   }else if(action==='startClickJs'){
      
   }else if(action==='newWindow'){
-      let win = new BrowserWindow({titleBarStyle: 'hidden', width: 450, height: 783});
+      let win = new BrowserWindow({titleBarStyle: 'hidden', width: 450, height: 783, resizable:false, maximizable: false, minimizable:false});
       win.setPosition(mainWindow.getPosition()[0] + 460, mainWindow.getPosition()[1]);
       win.loadURL(`file://${__dirname}/html/`+arg1);
       win.show();
+      if(arg2 && arg3){
+        win.setSize(arg2, arg3);
+      }
+  }else if(action==='newNotification'){
+      let win = new BrowserWindow({width: 300, height: 100, resizable:false, frame: false});
+      win.setPosition(screenSize().width-320, 20);
+      if(arg1){
+        win.loadURL(`file://${__dirname}/html/`+arg1);
+      }
+      win.show();
+      setTimeout(function(){
+        win.close();
+      },5000);
   }
+
 });
 
 
 
-var mouseClick=0, keyType=0, filePath='', isTracking = false, eventSender = null;
+var mouseClick=0, keyType=0, filePath='', isTracking = false, eventSender = null, activeWindow='Unknown';
 
 var startTrackingEvent = function(){
       var gkm = require('gkm');
@@ -107,15 +158,19 @@ var startTrackingEvent = function(){
               }
               console.log(this.event + ' ' + data);
           });
+
+          gkm.events.on('error', function(err) {
+             console.log('Error :'+err);
+             dialog.showErrorBox('Error','JRE not installed.\nPlease run command: "java -version" on terminal to check.\n'+err);
+          });
     }
 }; 
 
 ipcMain.on('get-events-request', function(event, arg1) {
    eventSender = event.sender;
    filePath = arg1;
-   monitor.getActiveWindow(afterGetWindowName);
+   eventSender.send('get-events-response', filePath,  activeWindow , mouseClick, keyType);
 });
-
 
 ipcMain.on('reset-events-request', function(event, arg1) {
    mouseClick=0;
@@ -129,13 +184,46 @@ ipcMain.on('set-tracking-request', function(event, arg1) {
  var monitor = require('active-window');
  var afterGetWindowName = function(window){
     try {
-      console.log("App: " + window.app);
-      console.log("Title: " + window.title);
-      eventSender.send('get-events-response', filePath,  window.title, mouseClick, keyType);
+      if(window && window.error){
+          console.log('Error getting window name');
+          activeWindow = 'Unknown';
+      }else{
+        console.log("App: " + window.app);
+        console.log("Title: " + window.title);
+        activeWindow = window.title;
+     }
     }catch(err) {
       console.log(err);
     } 
 };
 
         
+function javaversion(callback) {
+    var spawn = require('child_process').spawn('java', ['-version']);
+    spawn.on('error', function(err){
+        console.log('Got error'+err);
+        return callback(err, null);
+    })
+    spawn.stderr.on('data', function(data) {
+        console.log('Got data'+data);
+        data = data.toString().split('\n')[0];
+        var javaVersion = new RegExp('java version').test(data) ? data.split(' ')[2].replace(/"/g, '') : false;
+        if (javaVersion != false) {
+            // TODO: We have Java installed
+            return callback(null, data);
+        } else {
+            // TODO: No Java installed
+
+        }
+    });
+}
+
+function screenSize () {
+  const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+  return {
+    width:  width,
+    height: height
+  }
+};
+
 

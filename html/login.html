@@ -33,7 +33,7 @@
                 <div class="form-group">
                     <input type="password" class="form-control" name="password" placeholder="Password" style="height:60px; margin-top:25px;" value="monika21"> 
                     <span style="float:right;margin-top:-42px;margin-right:10px;">
-                      <button id="forgot-password" style="border:none;padding: 3px 15px;color:white;border-radius:3px;">Forgot?</button>
+                      <button type="button" id="forgot-password" style="border:none;padding: 3px 15px;color:white;border-radius:3px;">Forgot?</button>
                     </span>
                 </div>
                 <div class="checkbox" style="margin:10px;">
@@ -125,7 +125,9 @@
 
     $('#container').center();
 
-    $('#forgot-password').unbind('click');
+    $('#forgot-password').click(function(){
+        
+    });
 
   </script>
 </html>

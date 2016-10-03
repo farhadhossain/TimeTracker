@@ -37,7 +37,7 @@
                 <tr>
                    <td colspan="2">
                       <div>
-                         <input type="checkbox" name=""> <label>Automatically launch when i start the computer</label>
+                         <input type="checkbox" id="launchAutomatically"> <label>Automatically launch when i start the computer</label>
                        </div>   
                    </td>
                 </tr>
@@ -53,9 +53,9 @@
                 <tr>
                    <td colspan="2">
                       <div>
-                         <input type="radio" name="capture"> <label>Capture active screen only</label><br/><br/>
-                         <input type="radio" name="capture"> <label>Capture all screens</label><br/><br/>
-                         <input type="checkbox" name=""> <label>Notify when screenshots are taken</label>
+                         <input type="radio" name="capture" value="active"> <label>Capture active screen only</label><br/><br/>
+                         <input type="radio" name="capture" value="all"> <label>Capture all screens</label><br/><br/>
+                         <input id="notifyOnScreenShot" type="checkbox" name="notifyOnScreenShot"> <label>Notify when screenshots are taken</label>
                        </div>   
                    </td>
                 </tr>
@@ -71,9 +71,9 @@
                 <tr>
                    <td colspan="2">
                       <div>
-                         <input type="radio" name="resolution"> <label>Low</label><br/><br/>
-                         <input type="radio" name="resolution"> <label>Medium</label><br/><br/>
-                         <input type="radio" name="resolution"> <label>High</label>
+                         <input type="radio" name="resolution" value="low"> <label>Low</label><br/><br/>
+                         <input type="radio" name="resolution" value="mid"> <label>Medium</label><br/><br/>
+                         <input type="radio" name="resolution" value="hig"> <label>High</label>
                        </div>   
                    </td>
                 </tr>
@@ -113,5 +113,67 @@
             }
          });
       });
+
+
+
+      $(function() {
+          
+          var AutoLaunch = require('auto-launch');
+   
+          var autoLauncher = new AutoLaunch({
+              name: 'WorkGuppy'
+          });
+
+          var nconf = require('nconf');
+
+          nconf.argv().env().file({ file: `${__dirname}/../settings.prop` });
+
+          if(nconf.get('settings:launchAutomatically')){
+            $('#launchAutomatically').attr('checked', true);
+          } 
+          $('#launchAutomatically').change(function() {
+            nconf.set('settings:launchAutomatically', $(this).is(":checked"));
+            nconf.save(function (err) {});
+            if($(this).is(":checked")){
+              autoLauncher.enable();
+            }else{
+              autoLauncher.disable();
+            }
+          });
+
+      
+          if(nconf.get('settings:notifyOnScreenShot')){
+            $('#notifyOnScreenShot').attr('checked', true);
+          } 
+          $('#notifyOnScreenShot').change(function() {
+            nconf.set('settings:notifyOnScreenShot', $(this).is(":checked"));
+            nconf.save(function (err) {});
+          });
+
+          var $radios = $('input:radio[name=capture]');
+          if($radios.is(':checked') === false) {
+              $radios.filter('[value='+nconf.get('settings:capture')+']').prop('checked', true);
+              nconf.save(function (err) {});
+          }
+
+          $('input:radio[name=capture]').click(function() {
+              nconf.set('settings:capture', $(this).prop('value'));
+          });
+
+          var $radios = $('input:radio[name=resolution]');
+          if($radios.is(':checked') === false) {
+              $radios.filter('[value='+nconf.get('settings:resolution')+']').prop('checked', true);
+          }
+
+          $('input:radio[name=resolution]').click(function() {
+              nconf.set('settings:resolution', $(this).prop('value'));
+              nconf.save(function (err) {});
+          });
+
+      });
+
+
+
+
   </script>
   </html>

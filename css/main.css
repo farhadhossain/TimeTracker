@@ -44,3 +44,37 @@
 	color:#9FE26E;
 	font-size:30px;
 }
+
+.green-button{
+	margin-top:10px;
+	float:right;
+	padding:10px 40px;
+	background:#99e265;
+	border-color:#99e265;
+	border-radius:0px;
+}
+
+.memo_text {
+   margin-top: 10px;	
+   display:block;
+   background-color:#FEFEFE;
+   width: 100%;
+   padding: 20px;
+   border-radius: 5px;
+}
+
+.memo_text:hover{
+   display:block;	
+   background-color: #EEE;
+   width: 100%;
+   padding: 20px;
+}
+
+.memo_text .edit_icon{
+  display: none;
+  float: right;
+}
+
+.memo_text:hover .edit_icon{
+  display: block;
+}

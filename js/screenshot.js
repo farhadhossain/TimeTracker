@@ -10,28 +10,45 @@ const path = require('path');
 
 const screenshotImg = document.getElementById('screenshot-image');
 
+var nconf = require('nconf');
+nconf.argv().env().file({ file: `${__dirname}/../settings.prop` });
+
 module.exports.takeScreenshot = function () {
   console.log('Taking screenshot');
-  const thumbSize = determineScreenShotSize()
+  let thumbSize = determineScreenShotSize();
+  let ratio = thumbSize.width/thumbSize.height;
+  switch(nconf.get('settings:resolution')){
+     case 'mid':
+           thumbSize = {width:thumbSize.width/2, height : thumbSize.width/2*ratio};
+           break;
+      case 'low':
+           thumbSize = {width:thumbSize.width/3, height : thumbSize.width/3*ratio};
+           break;     
+
+  }
   let options = { types: ['screen'], thumbnailSize: thumbSize }
-   console.log('sdasd');
+  let capture = nconf.get('settings:capture');
+
   desktopCapturer.getSources(options, function (error, sources) {
     if (error) return console.log(error)
 
     sources.forEach(function (source) {
+      console.log(JSON.stringify(source));
+      //console.log('source.name:'+source.name);
+      //console.log('capture:'+ capture);
+      //if ((source.name === 'Entire screen' && capture==='all') || (source.name === 'Screen 1' && capture==='active')) {
       if (source.name === 'Entire screen' || source.name === 'Screen 1') {
         const screenshotPath = path.join(os.tmpdir(), new Date().getTime()+'.png')
-
         fs.writeFile(screenshotPath, source.thumbnail.toPng(), function (error) {
             if (error) return console.log(error)
             //shell.openExternal('file://' + screenshotPath)
             //const message = `Saved screenshot to: ${screenshotPath}`
             $('#screenshot-image').attr('src','file://' + screenshotPath);
             postScreenshot(screenshotPath);
-        })
+        });
       }
-    })
-  })
+    });
+  });
 };
 
 function determineScreenShotSize () {

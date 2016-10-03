@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "launchAutomatically": false,
+    "notifyOnScreenShot": false,
+    "resolution": "mid",
+    "capture": "all"
+  }
+}

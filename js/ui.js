@@ -55,3 +55,9 @@ module.exports.createFramelessWindow = function(){
 	let win = new BrowserWindow({titleBarStyle: 'hidden', width: 400, height: 600});
 	win.show();
 };
+
+module.exports.toggleAutoLaunch = function(){
+	const {BrowserWindow} = require('electron').remote;
+	let win = new BrowserWindow({titleBarStyle: 'hidden', width: 400, height: 600});
+	win.show();
+};

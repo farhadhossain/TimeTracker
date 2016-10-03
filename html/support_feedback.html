@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Support & Feedback</title>
+    <script>
+       var $ = require('jquery');
+       window.$ = $;
+       jQuery= $;
+       require('bootstrap');
+       var user = JSON.parse(localStorage.getItem('user'));
+    </script>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <style type="text/css">
+      a{
+        color: #15B0E0;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="container" style="width:94%;margin-left:3%;margin-top:40px;">
+
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a  href="#1" data-toggle="tab">Support</a>
+          </li>
+          <li><a href="#2" data-toggle="tab">Feedback</a>
+          </li>
+        </ul>
+          
+
+        <div class="tab-content ">
+          <div class="tab-pane active" id="1">
+            <textarea style="width:100%;border: 1px solid #EEE;margin-top:15px;resize: none;" placeholder="Description" rows="10" id="text_support"></textarea>
+            <input type="button" class="btn btn-success green-button" value="Send" id="btn_send_support"/>
+          </div>
+          <div class="tab-pane" id="2">
+            <textarea style="width:100%;border: 1px solid #EEE;margin-top:15px;resize: none;" placeholder="Feedback" rows="10" id="text_feedback"></textarea>
+            <input type="button" class="btn btn-success green-button" value="Send" id="btn_send_feedback"/>
+          </div>
+        </div>  
+
+    </div>  
+
+    <div id="success" style="display:none;">
+        <center><span class="glyphicon glyphicon-ok-circle" style="color:#99e265;font-size:60px;"></span></center>
+        <h3>Message sent successfully</h3>
+    </div>  
+    
+
+    <div class="modal fade" id="myPleaseWait" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-sm" style="margin-top: 25%;width:50%;margin-left:25%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="glyphicon glyphicon-time"></span>  Please Wait
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-info progress-bar-striped active" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </body>
+
+  <script>
+
+
+    function sendMessage(type, message){
+
+      $('#myPleaseWait').modal('show');
+      var url=' http://ec2-54-218-59-115.us-west-2.compute.amazonaws.com/api';
+      var posting = $.ajax({
+                          type:'POST', 
+                          url:url,
+                          dataType: "json",
+                          contentType: "application/json",
+                          headers: {
+                              "Content-Type": "application/json", 
+                              "Client-Service":"frontend-client",
+                              "Auth-Key":"3c6e0b8a9c15224a8228b9a98ca1531d",
+                              "Authorization":localStorage.getItem("token"),
+                              "User-ID":user.user_id
+                            }, 
+                          data:JSON.stringify({ action:"send_message", freelancer_id: user.user_id,  message_type: type, message: message}) 
+                        });
+    
+      posting.done(function( data ) {
+         $('#myPleaseWait').modal('hide');
+         if(data){
+            $('#container').hide();
+            $('#success').show();
+            $('#success').center();
+         }
+      });
+
+      posting.fail(function() {
+         $('#myPleaseWait').modal('hide');
+         alert("Couldn't connect to server");
+       });
+
+    };
+
+    $.fn.center = function () {
+       this.css("position","absolute");
+       this.css("top", ( $(window).height() - this.height() ) / 2 + "px");
+       this.css("left", ( $(window).width() - this.width() ) / 2 + "px");
+       return this;
+    }
+
+    $('#btn_send_support').click(function(){sendMessage(1,$('#text_support').val());});
+    $('#btn_send_feedback').click(function(){sendMessage(2,$('#text_feedback').val());});
+
+
+  </script>
+</html>

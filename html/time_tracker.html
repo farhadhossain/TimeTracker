@@ -65,7 +65,7 @@
           <div class="list-group"> 
             <div class="list-group-item">
               <table width="100%"><tr>
-                <td style="width:5%;" onclick="history.back();"><span class="glyphicon glyphicon-menu-left green"></span></td>
+                <td style="width:5%;" onclick="history.back();" id="back_button"><span class="glyphicon glyphicon-menu-left green"></span></td>
                 <td style="width:95%;text-align:center;"><h4 id="job_title" style="color:#8D8D8D;"></h4></td>
               </tr></table>
             </div>
@@ -93,13 +93,22 @@
                 <tr>
                     <td><div style="margin-top:20px;">THIS WEEK</div><div class="green" id="total_week_time">12:08</div></td>
                 </tr>
-                <tr>
-                    <td colspan="2"><textarea style="width:100%;border: 1px solid #EEE;margin-top:15px;resize: none;" placeholder="What are you working on?" rows="5" re></textarea></td>
+                <tr id="update_memo_1">
+                    <td colspan="2"><textarea id="memo_text" style="width:100%;border: 1px solid #EEE;margin-top:15px;resize: none;" placeholder="What are you working on?" rows="5"></textarea></td>
                 </tr>
-                <tr>
+                <tr id="update_memo_2">
                   <td colspan="2">
                     <input type="button" class="btn btn-success" 
                     style="margin-top:10px;float:right;padding:10px 40px;background:#99e265;border-color:#99e265;border-radius:0px;" value="Save" id="btn_save"/>
+                  </td>
+                </tr>
+                <tr id="update_memo_3">
+                  <td colspan="2" style="text-align: left;width: 100%;">
+                     <a href="#" class="memo_text"> 
+                        <span class="glyphicon glyphicon-pencil edit_icon"></span>
+                        <label style="color:#15B0E0;">Working on:</label><br/>
+                        <label id="working_on" style="color: #A9A9A9;"></label>
+                     </a>
                   </td>
                 </tr>
               </table>
@@ -113,7 +122,7 @@
         <div class="modal-dialog modal-sm" style="margin-top: 25%;width:50%;margin-left:25%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <span class="glyphicon glyphicon-time"></span>  Please Wait
+                    <span class="glyphicon glyphicon-time"></span> Uploading, Please Wait...
                 </div>
                 <div class="modal-body">
                     <div class="progress">
@@ -141,6 +150,12 @@
   <script type="text/javascript">
 
       var fs = require("fs"); 
+
+      //var eNotify = require('electron-notify);
+      
+      var nconf = require('nconf');
+      
+      nconf.argv().env().file({ file: `${__dirname}/../settings.prop` });
 
       var restler = require('restler'); 
 
@@ -181,7 +196,8 @@
                                 mouse_clicks : mouseClick,
                                 key_type : keyType,
                                 timestamp : new Date().getTime(),
-                                window_name : windowName,  
+                                window_name : windowName,
+                                memo : localStorage.getItem("memo")?localStorage.getItem("memo"):'',  
                                 file: restler.file(filePath, null, stats.size , null, "image/jpg")
                             }
               }).on("complete", function(data) {
@@ -198,7 +214,13 @@
             console.log(arg2);
             console.log(arg3);
             console.log(arg4); 
+            if(arg2=='error'){
+                const {dialog} = require('electron').remote;
+                dialog.showErrorBox('Error','Unable to get window name.\n Please contact support team.');
+                arg2 = 'Unknown';
+            }
             uploadFile(arg1, arg2, arg3, arg4);
+
       });
 
 
@@ -208,11 +230,18 @@
               $.APP.startTimer('sw');
               $('#sw_start').attr('value', 'PAUSE WORK');
               $('#sw_start').removeClass('btn-info');
-              takeScreenshotEvent = setInterval(function(){ screenshot.takeScreenshot(); }, 60000);
+              $('#back_button').hide();
+              takeScreenshotEvent = setInterval(function(){ 
+                                                            if(nconf.get('settings:notifyOnScreenShot')){
+                                                                 ipcRenderer.send('asynchronous-message', 'newNotification', 'notification.html');
+                                                            }
+                                                            screenshot.takeScreenshot(); 
+                                                          }, 60000);
           }else{
               isTracking = false;  
               clearInterval(takeScreenshotEvent);
               $.APP.pauseTimer();
+              $('#back_button').show();
               $('#sw_start').attr('value', 'START WORK'); 
               $('#sw_start').addClass('btn-info');
           }
@@ -220,8 +249,31 @@
           ipcRenderer.send('set-tracking-request', isTracking);
       }); 
 
+      //Set Memo Text
+      if(localStorage.getItem("memo")){
+          $('#working_on').html(localStorage.getItem("memo"));  
+          $('#update_memo_1').hide();
+          $('#update_memo_2').hide();
+          $('#update_memo_3').show(); 
+      }else{
+          $('#update_memo_1').show();
+          $('#update_memo_2').show();
+          $('#update_memo_3').hide(); 
+      }
       $('#btn_save').click(function(){
-         postScreenshot();
+          $('#update_memo_1').hide();
+          $('#update_memo_2').hide();
+          $('#update_memo_3').show();  
+          localStorage.setItem("memo", $('#memo_text').val());
+          $('#working_on').html(localStorage.getItem("memo"));
+      });
+      $('#update_memo_3').click(function(){
+          $('#update_memo_1').show();
+          $('#update_memo_2').show();
+          $('#update_memo_3').hide();  
+          $('#memo_text').val(localStorage.getItem("memo"));
+          localStorage.removeItem("memo");
+          $('#working_on').html('');
       });
 
 
