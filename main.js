@@ -3,6 +3,10 @@ const electron = require('electron');
 
 const {dialog, Tray} = require('electron');
 
+var nconf = require('nconf');
+
+nconf.argv().env().file({ file: `${__dirname}/settings.prop` });
+
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
@@ -17,10 +21,14 @@ function createWindow () {
   const appIcon = new Tray(`${__dirname}/assets/images/tray.png`)
 
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 450, height: 783, resizable:false, maximizable: false});
+  mainWindow = new BrowserWindow({width: 360, height: 625, resizable:false, maximizable: false});
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/html/login.html`);
+  if(nconf.get('settings:rememberMe') && nconf.get('settings:user')){
+     mainWindow.loadURL(`file://${__dirname}/html/current_contracts.html`);
+  }else{
+     mainWindow.loadURL(`file://${__dirname}/html/login.html`);
+  }
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools();
@@ -60,14 +68,7 @@ function createWindow () {
       else mainWindow.close()
     })
   });
-   
-  /*if (externalDisplay) {
-    win = new BrowserWindow({
-      x: externalDisplay.bounds.x + 50,
-      y: externalDisplay.bounds.y + 50
-    })
-    win.loadURL('https://github.com')
-  }*/
+  
 
   startTrackingEvent(); 
   monitor.getActiveWindow(afterGetWindowName, -1, 2);
@@ -115,8 +116,8 @@ ipcMain.on('asynchronous-message', (event, action, arg1, arg2, arg3) => {
   }else if(action==='startClickJs'){
      
   }else if(action==='newWindow'){
-      let win = new BrowserWindow({titleBarStyle: 'hidden', width: 450, height: 783, resizable:false, maximizable: false, minimizable:false});
-      win.setPosition(mainWindow.getPosition()[0] + 460, mainWindow.getPosition()[1]);
+      let win = new BrowserWindow({ width: 360, height: 625, resizable:false, maximizable: false, minimizable:false});
+      win.setPosition(mainWindow.getPosition()[0] + 370, mainWindow.getPosition()[1]);
       win.loadURL(`file://${__dirname}/html/`+arg1);
       win.show();
       if(arg2 && arg3){
@@ -226,4 +227,8 @@ function screenSize () {
   }
 };
 
+
+ /*process.on('uncaughtException', function () { 
+
+ });*/
 

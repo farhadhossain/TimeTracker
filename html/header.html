@@ -47,12 +47,19 @@
 
   function openSupport(){
     const {ipcRenderer} = require('electron');
-    ipcRenderer.send('asynchronous-message', 'newWindow', 'support_feedback.html', 700, 400);
+    ipcRenderer.send('asynchronous-message', 'newWindow', 'support_feedback.html', 600, 400);
   }
 
   function logout(){
     localStorage.removeItem("token");
     localStorage.removeItem("memo")
+    var nconf = require('nconf');
+    nconf.argv().env().file({ file: `${__dirname}/../settings.prop` });
+    nconf.set('settings:user',{});
+    nconf.set('settings:token',"");
+    nconf.set('settings:rememberMe',false);
+    nconf.save(function (err) {});
+
     const {ipcRenderer} = require('electron');
     ipcRenderer.send('asynchronous-message', 'loadURL', 'login.html');
   }

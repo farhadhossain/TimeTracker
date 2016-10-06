@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Current Contracts</title>
+    <title>Settings</title>
     <script>
        var user = JSON.parse(localStorage.getItem('user'));
        var $ = require('jquery');
@@ -37,7 +37,7 @@
                 <tr>
                    <td colspan="2">
                       <div>
-                         <input type="checkbox" id="launchAutomatically"> <label>Automatically launch when i start the computer</label>
+                         <input type="checkbox" id="launchAutomatically" style="vertical-align: top;"> <label>Automatically launch when i start<br/> the computer</label>
                        </div>   
                    </td>
                 </tr>
@@ -158,6 +158,7 @@
 
           $('input:radio[name=capture]').click(function() {
               nconf.set('settings:capture', $(this).prop('value'));
+              nconf.save(function (err) {});
           });
 
           var $radios = $('input:radio[name=resolution]');

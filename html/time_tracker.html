@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Time Tracker</title>
     <script>
+      var nconf = require('nconf');
+       nconf.argv().env().file({ file: `${__dirname}/../settings.prop` });
        var user = JSON.parse(localStorage.getItem('user'));
        var $ = require('jquery');
        window.$ = $;
@@ -19,13 +21,13 @@
       .counter{
         width: 100%;
         text-align: center;
-        margin: 20px 0;
+        margin: 0px 0px;
         color:#848484;
       }
 
       .tbl tr:first-child td {
         vertical-align: middle;
-        font-size: 80px;
+        font-size: 60px;
         font-weight: normal;
         font-family: "Roboto Light";
       }
@@ -65,7 +67,7 @@
           <div class="list-group"> 
             <div class="list-group-item">
               <table width="100%"><tr>
-                <td style="width:5%;" onclick="history.back();" id="back_button"><span class="glyphicon glyphicon-menu-left green"></span></td>
+                <td style="width:5%;" onclick="history.back();" id="back_button"><a href="#"><span class="glyphicon glyphicon-menu-left green"></span></a></td>
                 <td style="width:95%;text-align:center;"><h4 id="job_title" style="color:#8D8D8D;"></h4></td>
               </tr></table>
             </div>
@@ -80,7 +82,7 @@
               </center>
           </div>
 
-          <input type="button" class="btn btn-large btn-info btn-edit-trigger" style="width:90%;height:60px;margin-top:30px;margin-left:5%;" value="START WORK" id="sw_start" />
+          <input type="button" class="btn btn-large btn-info btn-edit-trigger" style="width:90%;height:50px;margin-top:10px;margin-left:5%;" value="START WORK" id="sw_start" />
 
           <div class="container_screenshot">
               <table style="width:90%; margin-left:5%;">
@@ -106,7 +108,7 @@
                   <td colspan="2" style="text-align: left;width: 100%;">
                      <a href="#" class="memo_text"> 
                         <span class="glyphicon glyphicon-pencil edit_icon"></span>
-                        <label style="color:#15B0E0;">Working on:</label><br/>
+                        <label id="working_on_label" style="color:#15B0E0;">Working on:</label><br/>
                         <label id="working_on" style="color: #A9A9A9;"></label>
                      </a>
                   </td>
@@ -152,10 +154,6 @@
       var fs = require("fs"); 
 
       //var eNotify = require('electron-notify);
-      
-      var nconf = require('nconf');
-      
-      nconf.argv().env().file({ file: `${__dirname}/../settings.prop` });
 
       var restler = require('restler'); 
 
@@ -168,8 +166,14 @@
       $('#job_title').html(localStorage.getItem('selectedJob'));
 
       $('#container').css('height', $(window).height());
+
+      if(localStorage.getItem("lastScreenshot")){
+          $('#screenshot-image').attr('src',localStorage.getItem("lastScreenshot"));
+      }
     
       function postScreenshot(filePath){
+         $('#screenshot-image').attr('src','file://' + filePath+'?t='+ new Date().getTime());
+         localStorage.setItem("lastScreenshot", 'file://' + filePath);
          ipcRenderer.send('get-events-request', filePath);
       }; 
 
@@ -236,7 +240,9 @@
                                                                  ipcRenderer.send('asynchronous-message', 'newNotification', 'notification.html');
                                                             }
                                                             screenshot.takeScreenshot(); 
+                                                             //clearInterval(takeScreenshotEvent);
                                                           }, 60000);
+
           }else{
               isTracking = false;  
               clearInterval(takeScreenshotEvent);
@@ -252,25 +258,37 @@
       //Set Memo Text
       if(localStorage.getItem("memo")){
           $('#working_on').html(localStorage.getItem("memo"));  
+      }else{
+          $('#working_on_label').hide(); 
+          $('#working_on').html('What are you working on?');  
+      }
+      
+      $('#update_memo_1').hide();
+      $('#update_memo_2').hide();
+      $('#update_memo_3').show(); 
+
+      $('#btn_save').click(function(){ 
+          if($('#memo_text').val().trim()!=''){
+            $('#working_on_label').show();
+            $('#working_on').show(); 
+            localStorage.setItem("memo", $('#memo_text').val());
+             $('#working_on').html($('#memo_text').val());
+          }else{
+            $('#working_on_label').hide(); 
+            $('#working_on').html('What are you working on?');  
+            localStorage.removeItem("memo");
+          }
           $('#update_memo_1').hide();
           $('#update_memo_2').hide();
           $('#update_memo_3').show(); 
-      }else{
-          $('#update_memo_1').show();
-          $('#update_memo_2').show();
-          $('#update_memo_3').hide(); 
-      }
-      $('#btn_save').click(function(){
-          $('#update_memo_1').hide();
-          $('#update_memo_2').hide();
-          $('#update_memo_3').show();  
-          localStorage.setItem("memo", $('#memo_text').val());
-          $('#working_on').html(localStorage.getItem("memo"));
+          $('#sw_start').show(); 
       });
+
       $('#update_memo_3').click(function(){
           $('#update_memo_1').show();
           $('#update_memo_2').show();
-          $('#update_memo_3').hide();  
+          $('#update_memo_3').hide(); 
+          $('#sw_start').hide();  
           $('#memo_text').val(localStorage.getItem("memo"));
           localStorage.removeItem("memo");
           $('#working_on').html('');
@@ -323,5 +341,10 @@
              });
       }; 
       loadContractDetail();
+
+      $('#screenshot-image').click(function(){
+          var shell = require('electron').shell;
+          shell.openExternal("http://ec2-54-218-59-115.us-west-2.compute.amazonaws.com/job/workDiary/"+new Buffer(localStorage.getItem("selectedContract")).toString('base64'));
+      });
   </script>
   </html>

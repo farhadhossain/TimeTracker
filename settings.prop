@@ -1,8 +1,11 @@
 {
   "settings": {
-    "launchAutomatically": false,
-    "notifyOnScreenShot": false,
+    "launchAutomatically": true,
+    "notifyOnScreenShot": true,
     "resolution": "mid",
-    "capture": "all"
+    "capture": "all",
+    "token": "",
+    "user": {},
+    "rememberMe": false
   }
 }

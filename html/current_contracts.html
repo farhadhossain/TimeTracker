@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <title>Current Contracts</title>
     <script>
-       var user = JSON.parse(localStorage.getItem('user'));
+       var nconf = require('nconf');
+       nconf.argv().env().file({ file: `${__dirname}/../settings.prop` });
+       var user = nconf.get('settings:user');
+       localStorage.setItem("token", nconf.get('settings:token')); 
+       localStorage.setItem("user", JSON.stringify(nconf.get('settings:user'))); 
+
        var $ = require('jquery');
        window.$ = $;
        jQuery= $;
@@ -24,7 +29,13 @@
           <div class="panel-heading"> </div>
 
           <div class="list-group"> 
-            <div class="list-group-item" style="width:100%;text-align:center;"><h4> Select Contract</h4></div>
+            <div class="list-group-item" style="width:100%;text-align:center;">
+                <table style="width:100%;"><tr>
+                  <td width="90%"><h4> Select Contract</h4></td><td id="reload" width="10%" style="text-align: right;"><h4 class="glyphicon glyphicon-refresh"></h4></td>
+                </tr></table>                
+            </div>
+
+            <div class="list-group-item" style="width:100%;display: none;" id="no_contracts"><h4> You have no open contracts</h4></div>
           </div>
        
        </div>
@@ -77,20 +88,27 @@
                           headers: {"Content-Type": "application/json", 
                                     "Client-Service":"frontend-client",
                                     "Auth-Key":"3c6e0b8a9c15224a8228b9a98ca1531d", 
-                                    "Authorization":localStorage.getItem("token"),
+                                    "Authorization":nconf.get('settings:token'),
                                     "User-ID":user.user_id}, 
                           data:JSON.stringify({ action:"open_jobs", freelancer_id : user.user_id}) 
                         });
 
             posting.done(function( data ) {
+
                $('#myPleaseWait').modal('hide');
+
                console.log(JSON.stringify(data));
                 
                var listItem = $('#list-group-item'); 
-    
-               $(data.data).each(function( index, val ) {
-                  listItem.tmpl(val).appendTo(".list-group");
-               });
+               
+               $(".contract").remove();    
+               if(data.data.length>0){
+                 $(data.data).each(function( index, val ) {
+                    listItem.tmpl(val).appendTo(".list-group");
+                 });
+               }else{
+                 $('#no_contracts').hide();
+               }
 
                //data =  JSON.parse(data);
                $(".contract").click(function(event) {
